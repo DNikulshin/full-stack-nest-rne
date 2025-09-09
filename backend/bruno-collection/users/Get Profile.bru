@@ -1,0 +1,14 @@
+meta {
+  name: Get Profile
+  type: http
+  seq: 5
+}
+
+get {
+  url: /users/profile
+}
+
+auth {
+  mode: bearer
+  bearer: {{access_token}}
+}

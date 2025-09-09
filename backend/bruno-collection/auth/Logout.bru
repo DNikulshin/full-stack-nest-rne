@@ -1,0 +1,19 @@
+meta {
+  name: Logout
+  type: http
+  seq: 3
+}
+
+post {
+  url: /auth/logout
+  body: none
+}
+
+auth {
+  mode: bearer
+  bearer: {{access_token}}
+}
+
+headers {
+  Cookie: refresh_token={{refresh_token}}
+}

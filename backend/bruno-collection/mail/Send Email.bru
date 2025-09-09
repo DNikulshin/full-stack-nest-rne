@@ -1,0 +1,24 @@
+meta {
+  name: Send Email
+  type: http
+  seq: 1
+}
+
+post {
+  url: /mail/send
+  body: application/json
+}
+
+auth {
+  mode: none
+}
+
+body {
+  type: json
+  raw: {
+  "to": "recipient@example.com",
+  "subject": "Test Email",
+  "text": "This is a test email from the API.",
+  "html": "<p>This is a <strong>test email</strong> from the API.</p>"
+}
+}

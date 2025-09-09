@@ -96,3 +96,200 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+## Backend Services Setup
+
+This project uses Docker Compose to manage all backend services including the database, database admin panel, and mail server.
+
+## Services
+
+1. **PostgreSQL Database**
+   - Version: Latest
+   - Port: 5433 (host) -> 5432 (container)
+   - Database: postgres
+   - User: postgres
+   - Password: postgres
+
+2. **Database Admin Panel (Adminer)**
+   - Port: 8080
+   - Access: http://localhost:8080
+   - Server: db (internal Docker service name)
+   - Username: postgres
+   - Password: postgres
+   - Database: postgres
+
+3. **Mail Server (MailHog)**
+   - SMTP Port: 1025 (host) -> 1025 (container)
+   - Web UI Port: 8025 (host) -> 8025 (container)
+   - Access: http://localhost:8025
+
+## Environment Configuration
+
+The application supports different environments:
+
+### Development Mode
+- Uses Docker containers for all services
+- Configuration loaded from `.env.development`
+- Mail service uses MailHog for email interception
+- Database runs in a Docker container
+- Frontend URL defaults to `http://localhost:5173`
+
+### Production Mode
+- Configuration loaded from `.env.production`
+- Uses real SMTP server for email sending
+- Connects to production database
+- Frontend URL must be configured
+
+### Environment Variables
+
+The following environment variables can be configured:
+
+#### Database
+- `DATABASE_URL`: PostgreSQL connection string
+
+#### Mail
+- `MAIL_HOST`: SMTP server hostname
+- `MAIL_PORT`: SMTP server port
+- `MAIL_SECURE`: Whether to use SSL/TLS
+- `MAIL_USER`: SMTP username
+- `MAIL_PASS`: SMTP password
+- `MAIL_FROM`: Default sender email address
+- `MAIL_FORWARD_TO`: Optional email address to forward all emails to
+
+#### JWT
+- `JWT_SECRET`: Secret key for JWT token signing
+- `JWT_REFRESH_SECRET`: Secret key for refresh token signing
+- `JWT_EXPIRES_IN`: Access token expiration time
+
+#### Application
+- `NODE_ENV`: Environment mode (development/production)
+- `FRONTEND_URL`: URL of the frontend application (used for password reset links)
+
+To switch between environments, set the `NODE_ENV` environment variable:
+```bash
+# Development (default)
+export NODE_ENV=development
+
+# Production
+export NODE_ENV=production
+```
+
+## Usage
+
+### Starting Services
+
+```bash
+# Windows
+.\start-all.bat
+
+# Or directly with Docker Compose
+docker-compose up -d
+```
+
+The start script will automatically check the availability of all services before completing.
+
+### Stopping Services
+
+```bash
+# Windows
+.\stop-all.bat
+
+# Or directly with Docker Compose
+docker-compose down
+```
+
+## Health Checks
+
+The services include health checks to ensure they're running properly:
+- Database: Uses `pg_isready` to check PostgreSQL readiness
+- Database Admin Panel: Checks HTTP response
+- Mail Server: Checks if the web UI is accessible
+
+## Volumes
+
+- `postgres_data`: Persists PostgreSQL data
+- `mailhog_data`: Persists MailHog email data
+
+## Troubleshooting
+
+If you encounter version compatibility issues with the database, you may need to remove the volumes:
+```
+docker-compose down -v
+```
+
+Then start the services again:
+```bash
+docker-compose up -d
+```
+
+If you encounter migration issues with Prisma, you can use the direct database push approach:
+```bash
+npx prisma db push
+```
+
+This bypasses the migration system and directly applies the schema to the database.
+
+## Service Access
+
+After starting the services, you can access:
+
+1. **Database Admin Panel**: http://localhost:8080
+   - System: PostgreSQL
+   - Server: db
+   - Username: postgres
+   - Password: postgres
+   - Database: postgres
+
+2. **Mail Server Web UI**: http://localhost:8025
+   - View captured emails sent by the application
+   - Test email functionality during development
+
+## Database Setup
+
+The project uses Prisma as the ORM for database operations. The database schema is defined in `prisma/schema.prisma`.
+
+### Initializing the Database
+
+To set up the database for the first time, run:
+```bash
+npx prisma db push
+```
+
+This command directly applies the schema to the database without using migrations, which can help avoid issues with PostgreSQL collation version mismatches.
+
+### Working with Migrations
+
+For production environments, it's recommended to use migrations:
+```bash
+# Create a new migration
+npx prisma migrate dev --name migration_name
+
+# Apply migrations
+npx prisma migrate deploy
+```
+
+If you encounter migration errors due to existing objects in the database, you may need to reset the database:
+```bash
+# Reset the database (removes all data)
+npx prisma migrate reset --force
+```
+
+Note: If you encounter collation version mismatch errors with PostgreSQL, use `npx prisma db push` instead of the migration commands.
+
+## Email Configuration
+
+### Development
+In development mode, the application uses MailHog to intercept and display emails:
+- SMTP Server: localhost:1025
+- Web Interface: http://localhost:8025
+
+### Production
+In production mode, the application connects directly to your SMTP server using credentials from environment variables:
+- MAIL_HOST: SMTP server hostname
+- MAIL_PORT: SMTP server port
+- MAIL_SECURE: Whether to use TLS (true/false)
+- MAIL_USER: SMTP username
+- MAIL_PASS: SMTP password
+- MAIL_FROM: Default sender address
+
+The start-all.bat script will verify that all services are accessible before completing, ensuring that your development environment is ready.

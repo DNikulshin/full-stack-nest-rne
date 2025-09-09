@@ -1,0 +1,14 @@
+meta {
+  name: Get All Users
+  type: http
+  seq: 4
+}
+
+get {
+  url: /users
+}
+
+auth {
+  mode: bearer
+  bearer: {{access_token}}
+}

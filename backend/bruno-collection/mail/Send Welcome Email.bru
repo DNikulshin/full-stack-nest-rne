@@ -1,0 +1,22 @@
+meta {
+  name: Send Welcome Email
+  type: http
+  seq: 2
+}
+
+post {
+  url: /mail/welcome
+  body: application/json
+}
+
+auth {
+  mode: none
+}
+
+body {
+  type: json
+  raw: {
+  "to": "newuser@example.com",
+  "name": "New User"
+}
+}

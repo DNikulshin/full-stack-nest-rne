@@ -1,0 +1,23 @@
+meta {
+  name: Register
+  type: http
+  seq: 1
+}
+
+post {
+  url: /users/register
+  body: application/json
+}
+
+auth {
+  mode: none
+}
+
+body {
+  type: json
+  raw: {
+  "email": "newuser@example.com",
+  "password": "password123",
+  "name": "New User"
+}
+}

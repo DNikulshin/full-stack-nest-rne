@@ -1,0 +1,8 @@
+{
+  "version": "1",
+  "name": "User Management API",
+  "type": "collection",
+  "meta": {
+    "baseUrl": "http://localhost:3000"
+  }
+}

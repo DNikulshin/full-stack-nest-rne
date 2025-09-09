@@ -1,0 +1,19 @@
+meta {
+  name: Refresh Token
+  type: http
+  seq: 2
+}
+
+post {
+  url: /auth/refresh
+  body: none
+}
+
+auth {
+  mode: bearer
+  bearer: {{access_token}}
+}
+
+headers {
+  Cookie: refresh_token={{refresh_token}}
+}
